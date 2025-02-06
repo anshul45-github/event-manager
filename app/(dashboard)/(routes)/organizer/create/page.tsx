@@ -33,7 +33,7 @@ const CreatePage = () => {
 
     const onSubmit = async (values : z.infer<typeof formSchema>) => {
         try {
-            const response = await fetch('/api/organizer', {
+            const response = await fetch('/api/events', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
