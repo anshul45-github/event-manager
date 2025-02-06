@@ -1,6 +1,7 @@
 "use client";
-import { Compass, Layout } from "lucide-react";
+import { BarChart, Compass, Layout, List } from "lucide-react";
 import { SidebarItem } from "./sidebar-item";
+import { usePathname } from "next/navigation";
 
 const routes = [
     {
@@ -13,10 +14,25 @@ const routes = [
         label: "Explore",
         href: "/explore"
     }
+];
+
+const OrganizerRoutes = [
+    {
+        icon: List,
+        label: "Events",
+        href: "/organizer/events"
+    },
+    {
+        icon: BarChart,
+        label: "Analytics",
+        href: "/organizer/analytics"
+    }
 ]
 
 export const SidebarRoutes = () => {
-    const sidebarRoutes = routes;
+    const pathname = usePathname();
+    const isOrganizerPage = pathname?.startsWith("/organizer");
+    const sidebarRoutes = isOrganizerPage ? OrganizerRoutes : routes;
     return (
         <div className="flex flex-col w-full">
             {sidebarRoutes.map((route, index) => (
