@@ -1,32 +1,28 @@
-import user from "@/lib/models/userModel";
+import User from "@/lib/models/userModel";
+import { connectToDB } from "@/lib/connectDB";
 
-import { NextResponse } from "next/server";
-
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+import { NextResponse } from "next/server";
 export async function POST(req: Request) {
-    const body = await req.json();
-    const { name, email, password } = body;
-
-    if(!name || !email || !password)
-        return NextResponse.json("Invalid fields", { status: 400 })
-
-    const isUserPresent = await user.findOne({ email });
-
-    if(isUserPresent)
-        return NextResponse.json("User is present", { status: 400 })
-
-    const hashPassword = await bcrypt.hash(password, 10);
-
+    await connectToDB();
+    // const { email, password, name } = await req.json();
+    const { email, password, name } = await req.json();
     try {
-        const User = new user({ email, name, password: hashPassword });
-        await User.save();
-        const token = jwt.sign({ name, email }, process.env.SECRET_KEY); 
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        const result = await User.create({ name, email, password: hashedPassword });
+
+        if(!process.env.SECRET_KEY) {
+            return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+        }
+
+        const token = jwt.sign({ email: result.email, id: result._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
+
+        return NextResponse.json({ success: "Email sent.", token }, { status: 200 });
     }
     catch(error) {
-        return NextResponse.json({ msg: "[SIGNUP]", error }, { status: 500 });
+        return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
     }
-
-    return NextResponse.json("ok");
 }
