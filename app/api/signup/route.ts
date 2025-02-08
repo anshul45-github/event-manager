@@ -21,6 +21,8 @@ export async function POST(req: Request) {
       );
     }
 
+    console.log(existingUser);
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 

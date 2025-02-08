@@ -9,24 +9,25 @@ import { IconBadge } from '@/components/icon-badge';
 import { LayoutDashboard } from 'lucide-react';
 import { TitleForm } from '@/components/events/title-form';
 import { DescriptionForm } from '@/components/events/description-form';
+import { TimeForm } from '@/components/events/time-form';
 
 const EventIdPage = async ({ params }: { params: { _id: string } }) => {
     const awaitedParams = await params;
     
-    const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
+    // const cookieStore = await cookies();
+    // const token = cookieStore.get('token')?.value;
     
-    const User = await user.findOne({ token: token });
+    // const User = await user.findOne({ token: token });
     
     const Event = await event.findOne({ _id: awaitedParams._id });
 
     if(!Event)
         return redirect("/");
 
-    if(Event.email !== User.email)
-        return redirect("/");
+    // if(Event.email !== User.email)
+    //     return redirect("/");
 
-    const requiredFields = [ Event.title, Event.description, Event.imageUrl, Event.time ];
+    const requiredFields = [ Event.title, Event.description, Event.time ];
 
     const totalFields = requiredFields.length;
     const completedFields = requiredFields.filter(Boolean).length;
@@ -55,6 +56,7 @@ const EventIdPage = async ({ params }: { params: { _id: string } }) => {
                     </div>
                     <TitleForm initialData={{ title: Event.title }} eventId={ awaitedParams._id } />
                     <DescriptionForm initialData={{ description: Event.description }} eventId={ awaitedParams._id } />
+                    <TimeForm initialData={{ time: Event.time }} eventId={ awaitedParams._id } />
                 </div>
             </div>
         </div>

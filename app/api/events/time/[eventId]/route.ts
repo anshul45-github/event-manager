@@ -1,4 +1,5 @@
 import event from "@/lib/models/events";
+import user from "@/lib/models/userModel";
 
 import { NextResponse } from "next/server";
 
@@ -19,7 +20,7 @@ export async function PATCH(req: Request, { params }: { params: { eventId: strin
 
         const awaitedParams = await params;
         let Event = await event.findOne({ _id: awaitedParams.eventId });
-        Event.description = values.description;
+        Event.time = values.time;
         await Event.save();
 
         return NextResponse.json(Event);
