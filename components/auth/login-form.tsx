@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
+
 import { useRouter } from "next/navigation";
 
 export const LoginForm = () => {
@@ -42,8 +43,17 @@ export const LoginForm = () => {
                 body: JSON.stringify(values),
             });
             const data = await response.json();
-            setError(data.error);
-            setSuccess(data.success);
+            if(data.error) {
+                setError(data.error);
+                setSuccess(undefined);
+            }
+            else {
+                setError(undefined);
+                setSuccess(data.success);
+                if(data.loggedIn) {
+                    router.push("/organizer");
+                }
+            }
         }
         catch(error) {
             console.log(error);

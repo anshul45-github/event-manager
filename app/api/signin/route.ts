@@ -38,21 +38,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create token
-    const token = await createToken({ id: User._id, email: User.email });
-
     const response = NextResponse.json(
-      { success: 'Logged in successfully' },
+      { success: 'Logged in successfully', loggedIn: true },
       { status: 200 }
     );
-
-    // Set cookie
-    response.cookies.set('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 86400, // 1 day
-    });
 
     return response;
   } catch (error) {

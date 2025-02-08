@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Define public paths that don't require authentication
-  const isPublicPath = ["/auth/login", "/auth/register"].includes(path);
+  const isPublicPath = ["/auth/login", "/auth/register", "/auth/new-verification"].includes(path);
 
   const user = await getUser(request);
 

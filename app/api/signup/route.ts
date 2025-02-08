@@ -24,23 +24,13 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const token = await createToken({ email: email });
-
     // Create user
-    const User = await user.create({ name, email, password: hashedPassword, emailVerified: false, token });    
+    const User = await user.create({ name, email, password: hashedPassword, emailVerified: false });    
 
     const response = NextResponse.json(
       { success: 'Confirmation email sent!' },
       { status: 201 }
     );
-
-    // Set cookie
-    response.cookies.set('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 86400, // 1 day
-    });
 
     const VerificationToken = await GenerateVerificationToken(email);
     await sendVerificationEmail(VerificationToken.email, VerificationToken.token);
