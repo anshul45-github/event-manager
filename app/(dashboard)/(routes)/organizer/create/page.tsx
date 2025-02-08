@@ -41,7 +41,8 @@ const CreatePage = () => {
                 body: JSON.stringify(values),
             });
             const data = await response.json();
-            router.push(`/organizer/events/${data._id}`)
+            router.push(`/organizer/events/${data._id}`);
+            toast.success("Event created");
         }
         catch {
             toast.error("Something went wrong");

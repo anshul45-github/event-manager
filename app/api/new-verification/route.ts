@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         if(!existingUser)
             return NextResponse.json({ error: "Email does not exist!" }, { status: 404 });
         
-        existingUser.emailVerified = true;
+        existingUser.emailVerified = new Date();
         existingUser.email = existingToken.email;
         await existingUser.save();
 
@@ -32,6 +32,11 @@ export async function POST(req: Request) {
         const cookieToken = await createToken({ email: existingUser.email });
 
         console.log(cookieToken);
+
+        existingUser.token = cookieToken;
+        existingUser.emailVerified = new Date();
+
+        await existingUser.save();
 
         const response = NextResponse.json({ success: "User verified successfully!" }, { status: 200 });
 
@@ -46,5 +51,6 @@ export async function POST(req: Request) {
     }
     catch(error) {
         console.log(error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

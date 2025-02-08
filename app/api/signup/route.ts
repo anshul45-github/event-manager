@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const User = await user.create({ name, email, password: hashedPassword, emailVerified: false });    
+    const User = await user.create({ name, email, password: hashedPassword });    
 
     const response = NextResponse.json(
       { success: 'Confirmation email sent!' },
@@ -37,6 +37,7 @@ export async function POST(req: Request) {
 
     return response;
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: 'Error creating user' },
       { status: 500 }

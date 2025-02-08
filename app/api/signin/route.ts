@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if(!User.emailVerified) {
+    if(!User.emailVerified || User.emailVerified + 3600*1000 < new Date()) {
       const verificationToken = await GenerateVerificationToken(email);
 
       await sendVerificationEmail(verificationToken.email, verificationToken.token);
