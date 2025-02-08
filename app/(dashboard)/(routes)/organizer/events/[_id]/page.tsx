@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 import { IconBadge } from '@/components/icon-badge';
 import { LayoutDashboard } from 'lucide-react';
 import { TitleForm } from '@/components/events/title-form';
+import { DescriptionForm } from '@/components/events/description-form';
 
 const EventIdPage = async ({ params }: { params: { _id: string } }) => {
     const awaitedParams = await params;
@@ -53,6 +54,7 @@ const EventIdPage = async ({ params }: { params: { _id: string } }) => {
                         </h2>
                     </div>
                     <TitleForm initialData={{ title: Event.title }} eventId={ awaitedParams._id } />
+                    <DescriptionForm initialData={{ description: Event.description }} eventId={ awaitedParams._id } />
                 </div>
             </div>
         </div>

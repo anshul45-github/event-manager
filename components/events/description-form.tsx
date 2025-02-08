@@ -11,24 +11,26 @@ import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 
-import { useRouter } from "next/navigation";
-
 import toast from "react-hot-toast";
 
-interface TitleFormProps {
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Textarea } from "../ui/textarea";
+
+interface DescriptionFormProps {
     initialData: {
-        title: string;
+        description: string;
     };
     eventId: string;
 }
 
 const formSchema = z.object({
-    title: z.string().min(1, {
-        message: "Name is required",
+    description: z.string().min(1, {
+        message: "Description is required",
     })
 })
 
-export const TitleForm = ({ initialData, eventId }: TitleFormProps) => {
+export const DescriptionForm = ({ initialData, eventId }: DescriptionFormProps) => {
     const [isEditing, setIsEditing] = useState(false);
 
     const toggleEdit = () => setIsEditing((current) => !current);
@@ -38,13 +40,13 @@ export const TitleForm = ({ initialData, eventId }: TitleFormProps) => {
         defaultValues: initialData,
     });
 
-    const { isSubmitting, isValid } = form.formState;
+    const { isSubmitting } = form.formState;
 
     const router = useRouter();
 
     const onSubmit = async (values : z.infer<typeof formSchema>) => {
         try {
-            const response = await fetch(`/api/events/name/${eventId}`, {
+            const response = await fetch(`/api/events/description/${eventId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,30 +66,29 @@ export const TitleForm = ({ initialData, eventId }: TitleFormProps) => {
     return (
         <div className="mt-6 border bg-slate-100 rounded-md p-4">
             <div className="font-medium flex items-center justify-between">
-                Event name
+                Event description
                 <Button onClick={toggleEdit} variant={"ghost"}>
                     {isEditing && <>Cancel</>}
                     {!isEditing && (
                         <>
                             <Pencil className="h-4 w-4 mr-2" />
-                            Edit name
+                            Edit description
                         </>
                     )}
                 </Button>
             </div>
             {!isEditing && (
-                <p className="text-sm mt-2">
-                    {initialData.title}
+                <p className={cn("text-sm mt-2", !initialData.description && "text-slate-500 italic")}>
+                    {initialData.description || "No description"}
                 </p>
             )}
             {isEditing && (
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-                        <FormField control={form.control} name="title" render={({ field }) => (
+                        <FormField control={form.control} name="description" render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input disabled={isSubmitting} placeholder="e.g. 'Annual conference'" {...field} />
-
+                                    <Textarea disabled={isSubmitting} placeholder="e.g. 'Annual company meeting to discuss the year's achievements and future goals...'" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
