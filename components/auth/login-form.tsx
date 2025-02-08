@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
+import { useRouter } from "next/navigation";
 
 export const LoginForm = () => {
     const [error, setError] = useState<string | undefined>("");
@@ -29,6 +30,8 @@ export const LoginForm = () => {
         }
     })
 
+    const router = useRouter();
+
     const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
         try {
             const response = await fetch("/api/signin", {
@@ -41,7 +44,6 @@ export const LoginForm = () => {
             const data = await response.json();
             setError(data.error);
             setSuccess(data.success);
-            localStorage.setItem('token', data.token);
         }
         catch(error) {
             console.log(error);
@@ -50,7 +52,7 @@ export const LoginForm = () => {
 
     return (
         <div>
-            <CardWrapper header="Please login to continue" backButtonLabel="Don't have an account" backButtonHref="auth/register" showSocial>
+            <CardWrapper header="Please login to continue" backButtonLabel="Don't have an account" backButtonHref="/auth/register" showSocial>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <div className="space-y-4">

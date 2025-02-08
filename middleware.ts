@@ -1,26 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { verifyAuth } from './lib/auth'
- 
-export default async function middleware(req: NextRequest) {
-    const token = req.cookies.get('user-token')?.value
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getUser } from "./lib/auth";
+import { redirect } from "next/navigation";
 
-    const verifiedToken = token && await verifyAuth(token).catch((error) => {
-        console.log(error);
-    })
+export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
 
-    if(req.nextUrl.pathname.startsWith('/auth') && !verifiedToken)
-        return;
+  // Define public paths that don't require authentication
+  const isPublicPath = ["/auth/login", "/auth/register"].includes(path);
 
-    if(req.url.includes('/auth') && verifiedToken) {
-        return NextResponse.redirect(new URL('/', req.url));
-    }
+  const user = await getUser(request);
 
-    if(!verifiedToken) {
-        return NextResponse.redirect(new URL('/auth/login', req.url));
-    }
+  if (isPublicPath && user && path !== "/") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  if (!isPublicPath && !user && path !== "/auth/login") {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
+
+  return NextResponse.next();
 }
- 
-// Routes Middleware should not run on
+
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
-}
+  matcher: ["/organizer/:path*"],
+};

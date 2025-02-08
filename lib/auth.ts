@@ -1,26 +1,31 @@
-import { jwtVerify } from "jose";
+import { jwtVerify, SignJWT } from 'jose';
+import { cookies } from 'next/headers';
+import { NextRequest } from 'next/server';
 
-interface UserJwtPayLoad {
-    jti: string;
-    iat: number;
+const SECRET_KEY = process.env.SECRET_KEY;
+
+export async function createToken(payload: any) {
+  const token = await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('1d')
+    .sign(new TextEncoder().encode(SECRET_KEY));
+  
+  return token;
 }
 
-export const getJwtSecretKey = () => {
-    const secret = process.env.SECRET_KEY;
-
-    if(!secret || secret.length === 0) {
-        throw new Error("The environment variable SECRET_KEY is not set.")
-    }
-
-    return secret;
+export async function verifyToken(token: string) {
+  try {
+    const verified = await jwtVerify(token, new TextEncoder().encode(SECRET_KEY));
+    return verified.payload;
+  } catch (err) {
+    return null;
+  }
 }
 
-export const verifyAuth = async (token: string) => {
-    try {
-        const verified = await jwtVerify(token, new TextEncoder().encode(getJwtSecretKey()));
-        return verified.payload as UserJwtPayLoad;
-    }
-    catch(error) {
-
-    }
+export async function getUser(request: NextRequest) {
+  const token = request.cookies.get('token')?.value;
+  if (!token) return null;
+  
+  const payload = await verifyToken(token);
+  return payload;
 }

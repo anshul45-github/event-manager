@@ -42,10 +42,8 @@ export const RegisterForm = () => {
                 body: JSON.stringify(values),
             });
             const data = await response.json();
-            // console.log(data);
             setError(data.error);
             setSuccess(data.success);
-            localStorage.setItem('token', data.token);
         }
         catch(error) {
             console.log(error);
@@ -54,7 +52,7 @@ export const RegisterForm = () => {
 
     return (
         <div>
-            <CardWrapper header="Create an account" backButtonLabel="Already have an account" backButtonHref="auth/login" showSocial>
+            <CardWrapper header="Create an account" backButtonLabel="Already have an account" backButtonHref="/auth/login" showSocial>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <div className="space-y-4">

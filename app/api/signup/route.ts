@@ -1,28 +1,55 @@
-import User from "@/lib/models/userModel";
-import { connectToDB } from "@/lib/connectDB";
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { createToken } from '@/lib/auth';
+import { connectToDB } from '@/lib/connectDB';
+import user from '@/lib/models/userModel';
+import { GenerateVerificationToken } from '@/lib/tokens';
+import { sendVerificationEmail } from '@/lib/mail';
 
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-
-import { NextResponse } from "next/server";
 export async function POST(req: Request) {
-    await connectToDB();
-    // const { email, password, name } = await req.json();
+  try {
     const { email, password, name } = await req.json();
-    try {
-        const hashedPassword = await bcrypt.hash(password, 12);
+    
+    await connectToDB();
 
-        const result = await User.create({ name, email, password: hashedPassword });
-
-        if(!process.env.SECRET_KEY) {
-            return NextResponse.json({ error: "Internal server error." }, { status: 500 });
-        }
-
-        const token = jwt.sign({ email: result.email, id: result._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
-
-        return NextResponse.json({ success: "Email sent.", token }, { status: 200 });
+    // Check if user exists
+    const existingUser = await user.findOne({ email });
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'User already exists' },
+        { status: 400 }
+      );
     }
-    catch(error) {
-        return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
-    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const token = await createToken({ email: email });
+
+    // Create user
+    const User = await user.create({ name, email, password: hashedPassword, emailVerified: false, token });    
+
+    const response = NextResponse.json(
+      { success: 'Confirmation email sent!' },
+      { status: 201 }
+    );
+
+    // Set cookie
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 86400, // 1 day
+    });
+
+    const VerificationToken = await GenerateVerificationToken(email);
+    await sendVerificationEmail(VerificationToken.email, VerificationToken.token);
+
+    return response;
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Error creating user' },
+      { status: 500 }
+    );
+  }
 }
