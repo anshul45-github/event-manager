@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as z from "ZOD";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { LoginSchema } from "@/lib/authSchema";
+import { newPasswordSchema } from "@/lib/authSchema";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
@@ -16,32 +16,29 @@ import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export const LoginForm = () => {
+export const NewPasswordForm = () => {
+    const token = useSearchParams().get("token");
+
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
-    const [isLoggedIn, setLoggedIn] = useState(false);
 
-    const form = useForm<z.infer<typeof LoginSchema>>({
-        resolver: zodResolver(LoginSchema),
+    const form = useForm<z.infer<typeof newPasswordSchema>>({
+        resolver: zodResolver(newPasswordSchema),
         defaultValues: {
-            email: "",
             password: "",
         }
     })
 
-    const router = useRouter();
-
-    const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    const onSubmit = async (values: z.infer<typeof newPasswordSchema>) => {
         try {
-            const response = await fetch("/api/signin", {
+            const response = await fetch("/api/new-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(values),
+                body: JSON.stringify({ ...values, token: token }),
             });
             const data = await response.json();
             if(data.error) {
@@ -51,10 +48,6 @@ export const LoginForm = () => {
             else {
                 setError(undefined);
                 setSuccess(data.success);
-                if(data.loggedIn) {
-                    setLoggedIn(true);
-                    router.push("/organizer");
-                }
             }
         }
         catch(error) {
@@ -64,21 +57,10 @@ export const LoginForm = () => {
 
     return (
         <div>
-            <CardWrapper header="Please login to continue" backButtonLabel="Don't have an account" backButtonHref="/auth/register">
+            <CardWrapper header="Enter a new password" backButtonLabel="Back to login" backButtonHref="/auth/login">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <div className="space-y-4">
-                            <FormField control={form.control} name="email" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Email
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="john.doe@example.com" type="email" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
                             <FormField control={form.control} name="password" render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
@@ -87,11 +69,6 @@ export const LoginForm = () => {
                                     <FormControl>
                                         <Input placeholder="******" type="password" {...field} />
                                     </FormControl>
-                                    <Button size={"sm"} variant={"link"} asChild className="px-0 font-normal">
-                                        <Link href="/auth/reset">
-                                            Forgot password ?
-                                        </Link>
-                                    </Button>
                                     <FormMessage />
                                 </FormItem>
                             )} />
@@ -99,14 +76,10 @@ export const LoginForm = () => {
                         <FormError message={error} />
                         <FormSuccess message={success} />
                         <Button type="submit" className="w-full">
-                            Login
+                            Reset password
                         </Button>
                     </form>
                 </Form>
-                <div className="mt-4 text-sm">
-                    You are logged in.
-                    You may use organizer mode now.
-                </div>
             </CardWrapper>
         </div>
     )

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as z from "ZOD";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { LoginSchema } from "@/lib/authSchema";
+import { ResetSchema } from "@/lib/authSchema";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
@@ -17,26 +17,21 @@ import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
-export const LoginForm = () => {
+export const ResetForm = () => {
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
-    const [isLoggedIn, setLoggedIn] = useState(false);
 
-    const form = useForm<z.infer<typeof LoginSchema>>({
-        resolver: zodResolver(LoginSchema),
+    const form = useForm<z.infer<typeof ResetSchema>>({
+        resolver: zodResolver(ResetSchema),
         defaultValues: {
             email: "",
-            password: "",
         }
     })
 
-    const router = useRouter();
-
-    const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    const onSubmit = async (values: z.infer<typeof ResetSchema>) => {
         try {
-            const response = await fetch("/api/signin", {
+            const response = await fetch("/api/reset", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -51,10 +46,6 @@ export const LoginForm = () => {
             else {
                 setError(undefined);
                 setSuccess(data.success);
-                if(data.loggedIn) {
-                    setLoggedIn(true);
-                    router.push("/organizer");
-                }
             }
         }
         catch(error) {
@@ -64,7 +55,7 @@ export const LoginForm = () => {
 
     return (
         <div>
-            <CardWrapper header="Please login to continue" backButtonLabel="Don't have an account" backButtonHref="/auth/register">
+            <CardWrapper header="Forgot your password?" backButtonLabel="Back to login" backButtonHref="/auth/login">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <div className="space-y-4">
@@ -79,34 +70,14 @@ export const LoginForm = () => {
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                            <FormField control={form.control} name="password" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Password
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="******" type="password" {...field} />
-                                    </FormControl>
-                                    <Button size={"sm"} variant={"link"} asChild className="px-0 font-normal">
-                                        <Link href="/auth/reset">
-                                            Forgot password ?
-                                        </Link>
-                                    </Button>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
                         </div>
                         <FormError message={error} />
                         <FormSuccess message={success} />
                         <Button type="submit" className="w-full">
-                            Login
+                            Send reset email
                         </Button>
                     </form>
                 </Form>
-                <div className="mt-4 text-sm">
-                    You are logged in.
-                    You may use organizer mode now.
-                </div>
             </CardWrapper>
         </div>
     )
