@@ -7,14 +7,17 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { IconBadge } from '@/components/icon-badge';
 import { LayoutDashboard } from 'lucide-react';
+import { TitleForm } from '@/components/events/title-form';
 
 const EventIdPage = async ({ params }: { params: { _id: string } }) => {
+    const awaitedParams = await params;
+    
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
     
     const User = await user.findOne({ token: token });
     
-    const Event = await event.findOne({ _id: params._id });
+    const Event = await event.findOne({ _id: awaitedParams._id });
 
     if(!Event)
         return redirect("/");
@@ -49,6 +52,7 @@ const EventIdPage = async ({ params }: { params: { _id: string } }) => {
                             Customize your event
                         </h2>
                     </div>
+                    <TitleForm initialData={{ title: Event.title }} eventId={ awaitedParams._id } />
                 </div>
             </div>
         </div>
