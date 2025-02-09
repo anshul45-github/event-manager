@@ -7,6 +7,7 @@ const eventSchema = new mongoose.Schema({
     imageUrl: { type: String },
     time: { type: Date },
     isPublished: { type: Boolean },
+    categoryId: { type: String },
 })
 
 const event = mongoose.models.event || mongoose.model('event', eventSchema);

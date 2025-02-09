@@ -1,17 +1,18 @@
 import event from '@/lib/models/events';
-import user from '@/lib/models/userModel';
+import { categories } from '@/lib/models/categories';
 
 import React from 'react';
-
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { IconBadge } from '@/components/icon-badge';
 import { LayoutDashboard } from 'lucide-react';
+
+import { redirect } from 'next/navigation';
+
+import { IconBadge } from '@/components/icon-badge';
 import { TitleForm } from '@/components/events/title-form';
 import { DescriptionForm } from '@/components/events/description-form';
 import { TimeForm } from '@/components/events/time-form';
 import { Banner } from '@/components/banner';
 import { EventActions } from '@/components/events/event-actions';
+import { CategoryForm } from '@/components/events/categories-form';
 
 const EventIdPage = async ({ params }: { params: { _id: string } }) => {
     const awaitedParams = await params;
@@ -29,7 +30,7 @@ const EventIdPage = async ({ params }: { params: { _id: string } }) => {
     // if(Event.email !== User.email)
     //     return redirect("/");
 
-    const requiredFields = [ Event.title, Event.description, Event.time ];
+    const requiredFields = [ Event.title, Event.description, Event.time, Event.categoryId ];
 
     const totalFields = requiredFields.length;
     const completedFields = requiredFields.filter(Boolean).length;
@@ -66,6 +67,12 @@ const EventIdPage = async ({ params }: { params: { _id: string } }) => {
                         <TitleForm initialData={{ title: Event.title }} eventId={ awaitedParams._id } />
                         <DescriptionForm initialData={{ description: Event.description }} eventId={ awaitedParams._id } />
                         <TimeForm initialData={{ time: Event.time }} eventId={ awaitedParams._id } />
+                        <CategoryForm initialData={{ categoryId: Event.categoryId }} eventId={ awaitedParams._id } options={categories.map((category) => {
+                            return {
+                                label: category.name,
+                                value: category.id.toLocaleString()
+                            }
+                        })} />
                     </div>
                 </div>
             </div>
