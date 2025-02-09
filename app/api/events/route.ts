@@ -17,8 +17,8 @@ export async function POST(req: Request) {
 
         // if(!User)
         //     return new NextResponse("Unauthorized", { status: 401 });
-
-        const Event = await event.create({ title: name });
+        const isPublished = false;
+        const Event = await event.create({ title: name, isPublished });
 
         await Event.save();
 
