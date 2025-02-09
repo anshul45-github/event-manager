@@ -7,7 +7,7 @@ export async function DELETE(req: Request, { params }: { params: { eventId: stri
         const ownEvent = await event.findOne({ _id: awaitedParams.eventId });
         if(!ownEvent)
             return new NextResponse("Unauthorized", {status: 401});
-        await ownEvent.delete();
+        await event.deleteOne({ _id: awaitedParams.eventId });
         return NextResponse.json(ownEvent);
     }
     catch(error) {

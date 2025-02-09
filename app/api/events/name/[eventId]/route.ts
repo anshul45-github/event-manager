@@ -5,16 +5,16 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(req: Request, { params }: { params: { eventId: string }}) {
     try {
-        const token = req.headers.get('cookie')?.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-        if(!token) {
-            return new NextResponse("Unauthorized", { status: 401 });
-        }
+        // const token = req.headers.get('cookie')?.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+        // if(!token) {
+        //     return new NextResponse("Unauthorized", { status: 401 });
+        // }
 
-        const User = await user.findOne({ token });
+        // const User = await user.findOne({ token });
 
-        if(!User) {
-            return new NextResponse("Unauthorized", { status: 401 });
-        }
+        // if(!User) {
+        //     return new NextResponse("Unauthorized", { status: 401 });
+        // }
 
         const values = await req.json();
 

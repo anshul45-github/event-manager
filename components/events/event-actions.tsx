@@ -51,9 +51,13 @@ export const EventActions = ({ disabled, eventId, isPublished }: EventActionsPro
             const response = await fetch(`/api/events/${eventId}`, {
                 method: "DELETE"
             });
-            toast.success("Event deleted successfully.");
-            router.refresh();
-            router.push("/organizer/create");
+            if(response.ok) {
+                toast.success("Event deleted successfully.");
+                router.refresh();
+                router.push("/organizer/events");
+            }
+            else
+                toast.error("An error occurred while deleting the event.");
         }
         catch(error) {
             toast.error("An error occurred while deleting the event.");
