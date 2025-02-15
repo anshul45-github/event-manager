@@ -17,7 +17,7 @@ const eventSchema = new mongoose.Schema({
     name: { type: String },
     description: { type: String },
     imageUrl: { type: String },
-    fee: { type: String },
+    fee: { type: Number },
     time: { type: Date },
     location: { type: String },
     isPublished: { type: Boolean, default: false },

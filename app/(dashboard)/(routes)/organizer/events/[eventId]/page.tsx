@@ -8,11 +8,12 @@ import event from "@/lib/models/events";
 
 import { auth } from "@clerk/nextjs/server";
 
-import { LayoutDashboard } from "lucide-react";
+import { CircleDollarSign, LayoutDashboard, ListCheck } from "lucide-react";
 
 import { redirect } from "next/navigation";
 import { CategoryForm } from "../../../../../../components/events/categories-form";
 import { categories } from "@/lib/models/categories";
+import { PriceForm } from "@/components/events/price-form";
 
 const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
     await connectToDB();
@@ -63,6 +64,26 @@ const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
                     <DescriptionForm initialData={{ description: Event.description }} eventId={ (await params).eventId } />
                     <ImageForm initialData={{ imageUrl: Event.imageUrl }} eventId={ (await params).eventId } />
                     <CategoryForm initialData={{ categoryId: Event.categoryId }} eventId={ (await params).eventId } options={options} />
+                </div>
+                <div className="space-y-6">
+                    <div>
+                        <div className="flex items-center gap-x-2">
+                            <IconBadge icon={ListCheck} />
+                            <h2 className="text-xl">
+                                Event details
+                            </h2>
+                        </div>
+                        <div>
+                            TODO: Add form for event brochure
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-x-2">
+                        <IconBadge icon={CircleDollarSign} />
+                        <h2 className="text-xl">
+                            Pricing
+                        </h2>
+                    </div>
+                    <PriceForm initialData={{ fee: Event.fee }} eventId={ (await params).eventId } />
                 </div>
             </div>
         </div>
