@@ -9,7 +9,6 @@ import { useState } from "react";
 
 import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
 
 import toast from "react-hot-toast";
 
@@ -53,7 +52,8 @@ export const DescriptionForm = ({ initialData, eventId }: DescriptionFormProps) 
                 },
                 body: JSON.stringify(values),
             });
-            const data = await response.json();
+            if(!response.ok)
+                throw new Error("Something went wrong");
             toast.success("Event updated");
             toggleEdit();
             router.refresh();

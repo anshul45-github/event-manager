@@ -41,10 +41,12 @@ const CreatePage = () => {
                 body: JSON.stringify(values),
             });
             const data = await response.json();
-            router.push(`/organizer/events/${data._id}`);
+            console.log(data);
+            router.push(`/organizer/events/${data.id}`);
             toast.success("Event created");
         }
-        catch {
+        catch(error) {
+            console.log(error);
             toast.error("Something went wrong");
         }
     }
@@ -56,7 +58,7 @@ const CreatePage = () => {
                     Name your event
                 </h1>
                 <p className="text-sm text-slate-600">
-                    Enter name of the event. Don't worry, you can change this later.
+                    Enter name of the event. Don&apos;t worry, you can change this later.
                 </p>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-8">

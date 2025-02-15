@@ -36,7 +36,7 @@ const IconVariants = cva(
             },
         },
         defaultVariants: {
-            variant: "success",
+            variant: "default",
             size: "default",
         }
     }

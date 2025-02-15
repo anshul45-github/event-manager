@@ -1,26 +1,19 @@
 import { connectToDB } from "@/lib/connectDB";
 import event from "@/lib/models/events";
+import { auth } from "@clerk/nextjs/server";
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     await connectToDB();
     try {
-        // const token = req.headers.get('cookie')?.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-        // if (!token) {
-        //     return new NextResponse("Unauthorized", { status: 401 });
-        // }
-        
-        // const User = await user.findOne({ token });
-
+        const { userId } = await auth();
         const { name } = await req.json();
 
-        // if(!User)
-        //     return new NextResponse("Unauthorized", { status: 401 });
-        const isPublished = false;
-        const Event = await event.create({ title: name, isPublished });
+        if(!userId)
+            return new NextResponse("Unauthorized", { status: 401 });
 
-        await Event.save();
+        const Event = await event.create({ userId, name });
 
         return NextResponse.json(Event);
     }

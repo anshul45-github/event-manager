@@ -1,8 +1,10 @@
+import { connectToDB } from "@/lib/connectDB";
 import event from "@/lib/models/events";
 
 import { NextResponse } from "next/server";
 
-export async function PATCH(req: Request, { params }: { params: { eventId: string }}) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ eventId: string }> }) {
+    await connectToDB();
     try {
         // const token = req.headers.get('cookie')?.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
         // if(!token) {
@@ -17,8 +19,8 @@ export async function PATCH(req: Request, { params }: { params: { eventId: strin
 
         const values = await req.json();
 
-        const awaitedParams = await params;
-        let Event = await event.findOne({ _id: awaitedParams.eventId });
+        const awaitedParams = (await params).eventId;
+        const Event = await event.findOne({ _id: awaitedParams });
         Event.categoryId = values.categoryId;
         console.log(Event);
         await Event.save();

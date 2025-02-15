@@ -2,10 +2,10 @@ import EventModel from "@/lib/models/events";
 
 import { NextResponse } from "next/server";
 
-export async function PATCH(req: Request, { params }: { params: { eventId: string }}) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ eventId: string }> }) {
     try {
-        const awaitedParams = await params;
-        let event = await EventModel.findOne({ _id: awaitedParams.eventId });
+        const awaitedParams = (await params).eventId;
+        const event = await EventModel.findOne({ _id: awaitedParams });
         if (!event) {
             return new NextResponse("Event not found", { status: 404 });
         }

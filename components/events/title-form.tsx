@@ -17,13 +17,13 @@ import toast from "react-hot-toast";
 
 interface TitleFormProps {
     initialData: {
-        title: string;
+        name: string;
     };
     eventId: string;
 }
 
 const formSchema = z.object({
-    title: z.string().min(1, {
+    name: z.string().min(1, {
         message: "Name is required",
     })
 })
@@ -38,7 +38,7 @@ export const TitleForm = ({ initialData, eventId }: TitleFormProps) => {
         defaultValues: initialData,
     });
 
-    const { isSubmitting, isValid } = form.formState;
+    const { isSubmitting } = form.formState;
 
     const router = useRouter();
 
@@ -51,7 +51,9 @@ export const TitleForm = ({ initialData, eventId }: TitleFormProps) => {
                 },
                 body: JSON.stringify(values),
             });
-            const data = await response.json();
+            if(!response.ok) {
+                throw new Error("Something went wrong");
+            }
             toast.success("Event updated");
             toggleEdit();
             router.refresh();
@@ -77,13 +79,13 @@ export const TitleForm = ({ initialData, eventId }: TitleFormProps) => {
             </div>
             {!isEditing && (
                 <p className="text-sm mt-2">
-                    {initialData.title}
+                    {initialData.name}
                 </p>
             )}
             {isEditing && (
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-                        <FormField control={form.control} name="title" render={({ field }) => (
+                        <FormField control={form.control} name="name" render={({ field }) => (
                             <FormItem>
                                 <FormControl>
                                     <Input disabled={isSubmitting} placeholder="e.g. 'Annual conference'" {...field} />

@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { SearchInput } from "./search-input";
+import { UserButton } from "@clerk/nextjs";
 
 export const NavbarRoutes = () => {
     const pathname = usePathname();
@@ -31,6 +32,7 @@ export const NavbarRoutes = () => {
                         </Button>
                     </Link>
                 )}
+                <UserButton afterSwitchSessionUrl="/" />
             </div>
         </>
     )

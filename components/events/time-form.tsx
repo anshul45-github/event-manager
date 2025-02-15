@@ -51,7 +51,7 @@ export const TimeForm = ({ initialData, eventId }: TimeFormProps) => {
 
     const onSubmit = async (values : z.infer<typeof formSchema>) => {
         try {
-            const response = await fetch(`/api/events/time/${eventId}`, {
+            await fetch(`/api/events/time/${eventId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

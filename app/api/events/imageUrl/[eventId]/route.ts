@@ -1,27 +1,23 @@
 import { connectToDB } from "@/lib/connectDB";
 import event from "@/lib/models/events";
+import { auth } from "@clerk/nextjs/server";
 
 import { NextResponse } from "next/server";
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ eventId: string }> }) {
-    await connectToDB();
     try {
-        // const token = req.headers.get('cookie')?.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-        // if(!token) {
-        //     return new NextResponse("Unauthorized", { status: 401 });
-        // }
+        await connectToDB();
 
-        // const User = await user.findOne({ token });
+        const { userId } = await auth();
 
-        // if(!User) {
-        //     return new NextResponse("Unauthorized", { status: 401 });
-        // }
+        if(!userId)
+            return new NextResponse("Unauthorized", { status: 401 })
 
         const values = await req.json();
 
         const awaitedParams = await params;
-        const Event = await event.findOne({ _id: awaitedParams.eventId });
-        Event.time = values.time;
+        const Event = await event.findOne({ id: awaitedParams.eventId, userId });
+        Event.imageUrl = values.imageUrl;
         await Event.save();
 
         return NextResponse.json(Event);

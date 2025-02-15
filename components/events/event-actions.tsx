@@ -60,6 +60,7 @@ export const EventActions = ({ disabled, eventId, isPublished }: EventActionsPro
                 toast.error("An error occurred while deleting the event.");
         }
         catch(error) {
+            console.log(error);
             toast.error("An error occurred while deleting the event.");
         }
         finally {
