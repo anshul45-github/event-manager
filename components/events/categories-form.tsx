@@ -14,7 +14,6 @@ import toast from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-
 import { Combobox } from "../ui/combobox";
 
 interface CategoryFormProps {
@@ -22,7 +21,7 @@ interface CategoryFormProps {
         categoryId: string;
     };
     eventId: string;
-    options: { label: string; value: string }[];
+    options: { value: string; label: string }[];
 }
 
 const formSchema = z.object({
@@ -46,8 +45,6 @@ export const CategoryForm = ({ initialData, eventId, options }: CategoryFormProp
     const router = useRouter();
 
     const selectedOption = options.find((option) => option.value === initialData.categoryId);
-
-    console.log(selectedOption);
 
     const onSubmit = async (values : z.infer<typeof formSchema>) => {
         console.log(values);

@@ -9,9 +9,10 @@ import event from "@/lib/models/events";
 import { auth } from "@clerk/nextjs/server";
 
 import { LayoutDashboard } from "lucide-react";
-import { ExplainVerbosity } from "mongodb";
 
 import { redirect } from "next/navigation";
+import { CategoryForm } from "../../../../../../components/events/categories-form";
+import { categories } from "@/lib/models/categories";
 
 const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
     await connectToDB();
@@ -32,6 +33,11 @@ const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
     const completedFields = requiredFields.filter(Boolean).length;
 
     const completionText = `(${completedFields}/${totalField})`;
+
+    const options = categories.map((category: any) => ({
+        value: category.id,
+        label: category.name,
+    }));
 
     return (
         <div className="p-6">
@@ -56,6 +62,7 @@ const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
                     <TitleForm initialData={{ name: Event.name }} eventId={ (await params).eventId } />
                     <DescriptionForm initialData={{ description: Event.description }} eventId={ (await params).eventId } />
                     <ImageForm initialData={{ imageUrl: Event.imageUrl }} eventId={ (await params).eventId } />
+                    <CategoryForm initialData={{ categoryId: Event.categoryId }} eventId={ (await params).eventId } options={options} />
                 </div>
             </div>
         </div>

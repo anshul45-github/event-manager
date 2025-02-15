@@ -21,7 +21,7 @@ const eventSchema = new mongoose.Schema({
     time: { type: Date },
     location: { type: String },
     isPublished: { type: Boolean, default: false },
-    categoryId: { type: Number },
+    categoryId: { type: String },
     brochureUrl: { type: String },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
