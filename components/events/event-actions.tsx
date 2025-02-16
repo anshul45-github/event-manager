@@ -1,10 +1,14 @@
 "use client";
 
 import { Trash } from "lucide-react";
-import { Button } from "../ui/button";
-import { ConfirmModal } from "../confirm-modal";
+
+import { Button } from "@/components/ui/button";
+import { ConfirmModal } from "@/components/confirm-modal";
+
 import { useState } from "react";
+
 import toast from "react-hot-toast";
+
 import { useRouter } from "next/navigation";
 
 interface EventActionsProps {
@@ -21,6 +25,7 @@ export const EventActions = ({ disabled, eventId, isPublished }: EventActionsPro
     const onClick = async () => {
         try {
             setIsLoading(true);
+
             if(!isPublished) {
                 const response = await fetch(`/api/events/${eventId}/publish`, {
                     method: "PATCH",
@@ -28,6 +33,7 @@ export const EventActions = ({ disabled, eventId, isPublished }: EventActionsPro
                 if(response.ok)
                     toast.success("Event published successfully.");
             }
+
             else if(isPublished) {
                 const response = await fetch(`/api/events/${eventId}/unpublish`, {
                     method: "PATCH",
@@ -46,8 +52,8 @@ export const EventActions = ({ disabled, eventId, isPublished }: EventActionsPro
     }
 
     const onDelete = async () => {
-        setIsLoading(true);
         try {
+            setIsLoading(true);
             const response = await fetch(`/api/events/${eventId}`, {
                 method: "DELETE"
             });
