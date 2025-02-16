@@ -15,6 +15,8 @@ import { CategoryForm } from "../../../../../../components/events/categories-for
 import { categories } from "@/lib/models/categories";
 import { PriceForm } from "@/components/events/price-form";
 import { BrochureForm } from "@/components/events/brochure-form";
+import { TimeForm } from "@/components/events/time-form";
+import { VenueForm } from "@/components/events/venue-form";
 
 const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
     await connectToDB();
@@ -29,7 +31,7 @@ const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
     if(!Event)
         return redirect("/");
 
-    const requiredFields = [Event.name, Event.description, Event.imageUrl, Event.fee, Event.time, Event.categoryId, Event.location];
+    const requiredFields = [Event.name, Event.description, Event.imageUrl, Event.fee, Event.time, Event.categoryId, Event.venue];
 
     const totalField = requiredFields.length;
     const completedFields = requiredFields.filter(Boolean).length;
@@ -74,9 +76,8 @@ const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
                                 Event details
                             </h2>
                         </div>
-                        <div>
-                            TODO: Add form for event brochure
-                        </div>
+                        <TimeForm initialData={{ time: Event.time }} eventId={ (await params).eventId } />
+                        <VenueForm initialData={{ venue: Event.venue, city: Event.city, state: Event.state }} eventId={ (await params).eventId } />
                     </div>
                     <div>
                         <div className="flex items-center gap-x-2">

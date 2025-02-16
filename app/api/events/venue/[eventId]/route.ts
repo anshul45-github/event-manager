@@ -17,7 +17,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ eventI
 
         const awaitedParams = await params;
         const Event = await event.findOne({ id: awaitedParams.eventId, userId });
-        Event.time = values.time;
+        Event.venue = values.venue;
+        Event.city = values.city;
+        Event.state = values.state;
         await Event.save();
 
         return NextResponse.json(Event);

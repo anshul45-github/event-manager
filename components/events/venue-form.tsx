@@ -8,35 +8,38 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "../ui/button";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 
 import toast from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Textarea } from "../ui/textarea";
+import { Input } from "../ui/input";
 
-import dayjs, { Dayjs } from 'dayjs';
-
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-
-interface TimeFormProps {
+interface VenueFormProps {
     initialData: {
-        time: Date;
+        venue: string;
+        city: string;
+        state: string;
     };
     eventId: string;
 }
 
 const formSchema = z.object({
-    time: z.date().min(new Date(), "Event time must be in the future"),
+    venue: z.string().min(1, {
+        message: "Description is required",
+    }),
+    city: z.string().min(1, {
+        message: "City is required",
+    }),
+    state: z.string().min(1, {
+        message: "State is required",
+    })
 })
 
-export const TimeForm = ({ initialData, eventId }: TimeFormProps) => {
+export const VenueForm = ({ initialData, eventId }: VenueFormProps) => {
     const [isEditing, setIsEditing] = useState(false);
-
-    const [value, setValue] = useState<Dayjs | null>(dayjs(new Date()));
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -51,16 +54,15 @@ export const TimeForm = ({ initialData, eventId }: TimeFormProps) => {
 
     const onSubmit = async (values : z.infer<typeof formSchema>) => {
         try {
-            const response = await fetch(`/api/events/time/${eventId}`, {
+            const response = await fetch(`/api/events/venue/${eventId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(values),
             });
-            if(!response.ok) {
+            if(!response.ok)
                 throw new Error("Something went wrong");
-            }
             toast.success("Event updated");
             toggleEdit();
             router.refresh();
@@ -73,40 +75,53 @@ export const TimeForm = ({ initialData, eventId }: TimeFormProps) => {
     return (
         <div className="mt-6 border bg-slate-100 rounded-md p-4">
             <div className="font-medium flex items-center justify-between">
-                Event time
+                Event venue
                 <Button onClick={toggleEdit} variant={"ghost"}>
                     {isEditing && <>Cancel</>}
                     {!isEditing && (
                         <>
                             <Pencil className="h-4 w-4 mr-2" />
-                            Edit time
+                            Edit venue
                         </>
                     )}
                 </Button>
             </div>
             {!isEditing && (
-                <p className={cn("text-sm mt-2", !initialData.time && "text-slate-500 italic")}>
-                    {initialData.time ? initialData.time.toDateString() : "No time set"}
+                <p className={cn("text-sm mt-2", !initialData.venue && "text-slate-500 italic")}>
+                    {initialData.venue ? (
+                        <div className="flex flex-col gap-1">
+                            <span>{initialData.venue}</span>
+                            <span>{initialData.city}, {initialData.state}</span>
+                        </div>
+                    ) : "No venue provided"}
                 </p>
             )}
             {isEditing && (
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-                        <FormField control={form.control} name="time" render={({ field }) => (
+                        <FormField control={form.control} name="venue" render={({ field }) => (
                             <FormItem>
+                                <FormLabel>Venue</FormLabel>
                                 <FormControl>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                      <DemoContainer components={['DateTimePicker']}>
-                                        <DateTimePicker
-                                          label="Event time"
-                                          value={value}
-                                          onChange={(newValue) => {
-                                            setValue(newValue);
-                                            field.onChange(newValue?.toDate());
-                                          }}
-                                        />
-                                      </DemoContainer>
-                                    </LocalizationProvider>
+                                    <Input disabled={isSubmitting} placeholder="Enter venue" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="city" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>City</FormLabel>
+                                <FormControl>
+                                    <Input disabled={isSubmitting} placeholder="Enter city" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="state" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>State</FormLabel>
+                                <FormControl>
+                                    <Input disabled={isSubmitting} placeholder="Enter state" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
