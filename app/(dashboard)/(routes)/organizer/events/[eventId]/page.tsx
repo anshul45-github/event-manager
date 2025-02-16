@@ -8,12 +8,13 @@ import event from "@/lib/models/events";
 
 import { auth } from "@clerk/nextjs/server";
 
-import { CircleDollarSign, LayoutDashboard, ListCheck } from "lucide-react";
+import { CircleDollarSign, File, LayoutDashboard, ListCheck } from "lucide-react";
 
 import { redirect } from "next/navigation";
 import { CategoryForm } from "../../../../../../components/events/categories-form";
 import { categories } from "@/lib/models/categories";
 import { PriceForm } from "@/components/events/price-form";
+import { BrochureForm } from "@/components/events/brochure-form";
 
 const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
     await connectToDB();
@@ -77,13 +78,24 @@ const EventIdPage = async ({ params }: { params: { eventId: string } }) => {
                             TODO: Add form for event brochure
                         </div>
                     </div>
-                    <div className="flex items-center gap-x-2">
-                        <IconBadge icon={CircleDollarSign} />
-                        <h2 className="text-xl">
-                            Pricing
-                        </h2>
+                    <div>
+                        <div className="flex items-center gap-x-2">
+                            <IconBadge icon={CircleDollarSign} />
+                            <h2 className="text-xl">
+                                Pricing
+                            </h2>
+                        </div>
+                        <PriceForm initialData={{ fee: Event.fee }} eventId={ (await params).eventId } />
                     </div>
-                    <PriceForm initialData={{ fee: Event.fee }} eventId={ (await params).eventId } />
+                    <div>
+                        <div className="flex items-center gap-x-2">
+                            <IconBadge icon={File} />
+                            <h2 className="text-xl">
+                                Brochure
+                            </h2>
+                        </div>
+                        <BrochureForm initialData={{ brochureUrl: Event.brochureUrl }} eventId={ (await params).eventId } />
+                    </div>
                 </div>
             </div>
         </div>
